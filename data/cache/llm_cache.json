@@ -1,0 +1,135 @@
+{
+  "a6976ee4d653dbd62eec005790a4fb3dd20e213537660cd0c611c367bde9e370": {
+    "schemaVersion": "1.0",
+    "recordType": "STARTUP",
+    "source": {
+      "name": "TechCrunch",
+      "url": "https://techcrunch.com/2026/08/mistral-ai"
+    },
+    "content": {
+      "entityName": "Mistral AI",
+      "data": {
+        "employeeCount": 250
+      }
+    },
+    "collectedAt": "2026-08-15T00:00:00Z"
+  },
+  "78965b80cfe72b16a0457c025d70d6cc4da0bc08298c2c37e46b6537ddab304e": {
+    "schemaVersion": "1.0",
+    "recordType": "STARTUP",
+    "source": {
+      "name": "VentureBeat",
+      "url": "https://venturebeat.com/ai/writer-ai"
+    },
+    "content": {
+      "entityName": "Writer AI",
+      "data": {
+        "employeeCount": null
+      }
+    },
+    "collectedAt": "2023-01-01T00:00:00Z"
+  },
+  "edbdca45bf9ed3cf151579019d4ae1abc18c5a62a82143635d780419c8587727": {
+    "schemaVersion": "1.0",
+    "recordType": "PRODUCT",
+    "source": {
+      "name": "HackerNews",
+      "url": "https://news.ycombinator.com/item?id=388291"
+    },
+    "content": {
+      "startupName": "vLLM Project",
+      "pricingModel": "FREEMIUM"
+    },
+    "collectedAt": "2026-08-15T08:01:40.935663+00:00"
+  },
+  "9cff5c3bd7cc0c9fb308990c24001a1cf745c2b749edf71efb21637c38d7f6d6": {
+    "schemaVersion": "1.0",
+    "recordType": "PRODUCT",
+    "source": {
+      "name": "Twitter / X",
+      "url": "https://x.com/cursor_ai/status/889900"
+    },
+    "content": {
+      "startupName": "Cursor AI Code Editor by Anysphere",
+      "pricingModel": "FREEMIUM"
+    },
+    "collectedAt": "2026-08-15T08:01:41.842868+00:00"
+  },
+  "deepseek-ai/deepseek-v3": {
+    "github_url": "https://github.com/deepseek-ai/DeepSeek-V3",
+    "github_stars": 104269
+  },
+  "4fde9faed3583a1ae3e00037b01f070f56fc3c50ee99b5a06fc15c6a16ba5100": {
+    "schemaVersion": "1.0",
+    "recordType": "RESEARCH_PAPER",
+    "content": {
+      "title": "DeepSeek-V3 Technical Report",
+      "authors": [
+        "DeepSeek AI Team"
+      ],
+      "paper_url": "https://arxiv.org/abs/2401.01234",
+      "github_url": "https://github.com/deepseek-ai/DeepSeek-V3",
+      "github_stars": null,
+      "published_date": "2024-12-27T00:00:00Z"
+    }
+  },
+  "343ab180c01e0aad92dec8ed5f6b88b0cab0f95005bae131b7c14147b12bcd15": {
+    "schemaVersion": "1.0",
+    "recordType": "RESEARCH_PAPER",
+    "content": {
+      "title": "Qwen2.5 Technical Report",
+      "authors": [
+        "Qwen Team, Alibaba Cloud"
+      ],
+      "paper_url": "https://arxiv.org/abs/2402.56789",
+      "github_url": "https://github.com/QwenLM/Qwen2.5",
+      "github_stars": null,
+      "published_date": "2024-09-18T00:00:00Z"
+    }
+  },
+  "3a0d97ba92122e1e8daa41ee7a8f6847f956800f6ebcb742f10f9ec4140721cb": {
+    "schemaVersion": "1.0",
+    "recordType": "NEWS",
+    "source": {
+      "name": "Techmeme",
+      "url": "https://techmeme.com/2026/08/hyperscalers-datacenter"
+    },
+    "content": {
+      "title": "Hyperscalers' Datacenter Spending Update",
+      "url": "https://techmeme.com/2026/08/hyperscalers-datacenter",
+      "published_date": "2026-08-15T08:01:43.950037+00:00",
+      "summary": "Intelligence Update"
+    },
+    "collectedAt": "2026-08-15T08:01:43.950037+00:00"
+  },
+  "f0d992f997062bcacc2333b1e2a67f2c26aa0ec4933910e18f72426b73dc6309": {
+    "schemaVersion": "1.0",
+    "recordType": "JOB",
+    "content": {
+      "company": "Linkedin",
+      "date": "2026-08-15T08:01:47.206903+00:00",
+      "is_remote": false,
+      "role_family": "Engineering"
+    },
+    "collectedAt": "2026-08-15T08:01:47.206903+00:00",
+    "source": {
+      "name": "Job",
+      "url": "https://linkedin.com/jobs/view/anthropic-evals-lead"
+    }
+  },
+  "b28187d7262049fd18f9326f5a7b7a2191209616ea4cc1adf5e142f50aae7741": {
+    "schemaVersion": "1.0",
+    "recordType": "JOB",
+    "content": {
+      "company": "News",
+      "date": "2026-08-15T08:01:48.225814+00:00",
+      "is_remote": false,
+      "role_family": "Engineering"
+    },
+    "collectedAt": "2026-08-15T08:01:48.225814+00:00",
+    "source": {
+      "name": "Job",
+      "url": "https://news.ycombinator.com/item?id=883719"
+    }
+  }
+}

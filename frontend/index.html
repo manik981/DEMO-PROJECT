@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHERIA — Autonomous Data Intelligence Platform</title>
+    <!-- Modern Luxury Typography: Outfit (Display), Plus Jakarta Sans (UI), JetBrains Mono (Data) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=12.0.0">
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Toast Notification Hub -->
+    <div class="terminal-toast-hub" id="toast-hub"></div>
+
+    <!-- Global Loading Overlay (Uninterruptible) -->
+    <div id="global-loading-overlay" style="display: none;">
+        <div class="overlay-content">
+            <div class="spinner-container" id="global-overlay-spinner">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+            </div>
+            <div id="global-overlay-title">Loading...</div>
+            <div id="global-overlay-desc">Please wait while data is being processed.</div>
+            <div id="global-overlay-subdesc"></div>
+        </div>
+    </div>
+
+    <!-- GRAND LANDING PAGE -->
+    <div class="auth-landing-page" id="auth-landing-page">
+        <div class="landing-card">
+            <div class="landing-icon-wrap">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <h1 class="landing-title">AETHERIA — Autonomous Data Intelligence Platform</h1>
+            <p class="landing-subtitle">Multi-Source Ingestion • Deterministic Intelligence • LLM-Assisted Resolution</p>
+            
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; text-align: left; margin-bottom: 32px; font-size: 13px; color: var(--text-muted);">
+                <div style="font-weight: 700; color: var(--status-success); margin-bottom: 6px;"><i class="fa-solid fa-shield-check"></i> Standard User Quota</div>
+                • Maximum <strong>5 lifetime pipeline runs</strong> per account.<br>
+                • Maximum <strong>5 records per vertical</strong> rate limit.
+            </div>
+
+            <button class="btn-landing-google" onclick="signInWithGoogle()">
+                <i class="fa-brands fa-google" style="color: #4285F4;"></i>
+                <span>Continue with Google</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="dashboard-app" style="display: none;">
+    <!-- Main Studio Shell -->
+    <div class="terminal-shell">
+        <!-- Left Navigation Sidebar -->
+        <aside class="terminal-sidebar">
+            <div class="terminal-brand-header">
+                <div class="brand-title-group">
+                    <span class="brand-emblem-badge"><i class="fa-solid fa-bolt"></i> AI/DATA</span>
+                    <span class="brand-title-text">AETHERIA Platform</span>
+                </div>
+            </div>
+
+            <!-- Ingestion Verticals Nav -->
+            <div class="sidebar-nav-group">
+                <div class="sidebar-nav-label">Data Verticals</div>
+                <ul class="sidebar-nav-list">
+                    <li>
+                        <a href="javascript:void(0)" class="sidebar-nav-item active" data-tab="startups" onclick="switchTab('startups')">
+                            <span class="nav-item-left">
+                                <i class="fa-solid fa-rocket nav-item-icon"></i>
+                                <span>Startups</span>
+                            </span>
+                            <span class="nav-count-badge" id="nav-count-startups">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="sidebar-nav-item" data-tab="products" onclick="switchTab('products')">
+                            <span class="nav-item-left">
+                                <i class="fa-solid fa-layer-group nav-item-icon"></i>
+                                <span>AI Products</span>
+                            </span>
+                            <span class="nav-count-badge" id="nav-count-products">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="sidebar-nav-item" data-tab="papers" onclick="switchTab('papers')">
+                            <span class="nav-item-left">
+                                <i class="fa-solid fa-file-lines nav-item-icon"></i>
+                                <span>Research Papers</span>
+                            </span>
+                            <span class="nav-count-badge" id="nav-count-papers">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="sidebar-nav-item" data-tab="jobs" onclick="switchTab('jobs')">
+                            <span class="nav-item-left">
+                                <i class="fa-solid fa-briefcase nav-item-icon"></i>
+                                <span>24h AI Jobs</span>
+                            </span>
+                            <span class="nav-count-badge" id="nav-count-jobs">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="sidebar-nav-item" data-tab="news" onclick="switchTab('news')">
+                            <span class="nav-item-left">
+                                <i class="fa-solid fa-newspaper nav-item-icon"></i>
+                                <span>24h AI News</span>
+                            </span>
+                            <span class="nav-count-badge" id="nav-count-news">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Intelligence & Observability Nav -->
+            <div class="sidebar-nav-group">
+                <div class="sidebar-nav-label">Intelligence & Observability</div>
+                <ul class="sidebar-nav-list">
+                    <li>
+                        <a href="javascript:void(0)" class="sidebar-nav-item" data-tab="mappings" onclick="switchTab('mappings')">
+                            <span class="nav-item-left">
+                                <i class="fa-solid fa-code-merge nav-item-icon"></i>
+                                <span>Entity Mappings</span>
+                            </span>
+                            <span class="nav-count-badge" id="nav-count-entities">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="sidebar-nav-item" data-tab="runs" onclick="switchTab('runs')">
+                            <span class="nav-item-left">
+                                <i class="fa-solid fa-chart-line nav-item-icon"></i>
+                                <span>Pipeline Runs</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="sidebar-nav-item" data-tab="quarantine" onclick="switchTab('quarantine')">
+                            <span class="nav-item-left">
+                                <i class="fa-solid fa-shield-halved nav-item-icon"></i>
+                                <span>Quarantine</span>
+                            </span>
+                            <span class="nav-count-badge" id="nav-count-quarantine" style="color:var(--status-warning);">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-bottom-panel">
+                <div class="system-status-chip">
+                    <span class="status-dot-solid"></span>
+                    <span>Supabase: Connected</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">
+                    11 Tables Synced
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Studio Body -->
+        <div class="terminal-main">
+            <!-- Studio Top Bar -->
+            <header class="terminal-top-bar">
+                <div class="terminal-heading-crumb">
+                    <span>STUDIO /</span>
+                    <strong id="crumb-active-tab">STARTUPS</strong>
+                </div>
+
+                <div class="terminal-actions-cluster">
+                    <!-- Google Auth Status Cluster -->
+                    <div id="auth-status-container" style="display:flex; align-items:center; gap:8px;">
+                        <button class="btn-terminal btn-terminal-secondary" onclick="signInWithGoogle()">
+                            <i class="fa-brands fa-google" style="color:var(--accent-primary);"></i>
+                            <span>Login with Google</span>
+                        </button>
+                    </div>
+
+                    <!-- Live Theme Palette Picker -->
+                    <div class="theme-selector-wrap">
+                        <i class="fa-solid fa-palette"></i>
+                        <select id="theme-selector" class="theme-select" onchange="changeColorTheme(this.value)">
+                            <option value="gold" selected>🌟 Champagne Gold</option>
+                            <option value="emerald">🌿 Emerald Seafoam</option>
+                            <option value="rose">🌅 Sunset Coral</option>
+                            <option value="cyan">❄️ Arctic Cyan</option>
+                        </select>
+                    </div>
+
+                    <div class="limit-control-wrap">
+                        <label for="scrape-limit-select">Limit:</label>
+                        <select id="scrape-limit-select" class="terminal-select">
+                            <option value="5">5 / vert</option>
+                            <option value="25">25 / vert</option>
+                            <option value="50">50 / vert</option>
+                            <option value="100" selected>100 / vert</option>
+                            <option value="250">250 / vert</option>
+                            <option value="500">500 / vert</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-terminal btn-terminal-secondary" onclick="triggerVerifyAudit()">
+                        <i class="fa-solid fa-shield-check"></i>
+                        <span>Audit Verifier</span>
+                    </button>
+                    <button class="btn-terminal btn-terminal-primary" id="btn-run-pipeline" onclick="triggerPipelineRun()">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Run Pipeline</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 🌟 VISUAL HERO METRIC DECK: Big Bold Modern Counters -->
+            <section class="hero-metric-deck">
+                <div class="hero-metric-cell" onclick="switchTab('startups')">
+                    <div class="hero-metric-header">
+                        <span class="hero-metric-tag">Startups</span>
+                        <i class="fa-solid fa-rocket" style="font-size: 11px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="hero-metric-num" id="metric-startups">0</div>
+                    <div class="hero-metric-sub">Seed Startup Registry</div>
+                </div>
+
+                <div class="hero-metric-cell" onclick="switchTab('products')">
+                    <div class="hero-metric-header">
+                        <span class="hero-metric-tag">AI Products</span>
+                        <i class="fa-solid fa-layer-group" style="font-size: 11px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="hero-metric-num" id="metric-products">0</div>
+                    <div class="hero-metric-sub">Hugging Face Spaces</div>
+                </div>
+
+                <div class="hero-metric-cell" onclick="switchTab('papers')">
+                    <div class="hero-metric-header">
+                        <span class="hero-metric-tag">Research Papers</span>
+                        <i class="fa-solid fa-file-lines" style="font-size: 11px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="hero-metric-num" id="metric-papers">0</div>
+                    <div class="hero-metric-sub">arXiv Atom API</div>
+                </div>
+
+                <div class="hero-metric-cell" onclick="switchTab('jobs')">
+                    <div class="hero-metric-header">
+                        <span class="hero-metric-tag">24h Jobs</span>
+                        <i class="fa-solid fa-briefcase" style="font-size: 11px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="hero-metric-num" id="metric-jobs">0</div>
+                    <div class="hero-metric-sub">Strict 24h Rolling Window</div>
+                </div>
+
+                <div class="hero-metric-cell" onclick="switchTab('news')">
+                    <div class="hero-metric-header">
+                        <span class="hero-metric-tag">24h News</span>
+                        <i class="fa-solid fa-newspaper" style="font-size: 11px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="hero-metric-num" id="metric-news">0</div>
+                    <div class="hero-metric-sub">Strict 24h Rolling Window</div>
+                </div>
+
+                <div class="hero-metric-cell" onclick="switchTab('mappings')">
+                    <div class="hero-metric-header">
+                        <span class="hero-metric-tag">Canonical Entities</span>
+                        <i class="fa-solid fa-code-merge" style="font-size: 11px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="hero-metric-num" id="metric-entities">0</div>
+                    <div class="hero-metric-sub">RapidFuzz Resolution</div>
+                </div>
+
+                <div class="hero-metric-cell" style="border-left: 2px solid var(--accent-primary);">
+                    <div class="hero-metric-header">
+                        <span class="hero-metric-tag" style="color:var(--status-success);">Data Quality</span>
+                        <i class="fa-solid fa-shield-halved" style="font-size: 11px; color: var(--status-success);"></i>
+                    </div>
+                    <div class="hero-metric-num" id="metric-quality" style="color:var(--status-success);">98.5%</div>
+                    <div class="hero-metric-sub">Schema Pass Rate</div>
+                </div>
+
+                <div class="hero-metric-cell">
+                    <div class="hero-metric-header">
+                        <span class="hero-metric-tag" style="color:var(--status-warning);">Deduplicated</span>
+                        <i class="fa-solid fa-filter" style="font-size: 11px; color: var(--status-warning);"></i>
+                    </div>
+                    <div class="hero-metric-num" id="metric-dedup" style="color:var(--status-warning);">0</div>
+                    <div class="hero-metric-sub">Duplicates Skipped</div>
+                </div>
+            </section>
+
+            <!-- Inline Collapsible Pipeline Runner Banner (Non-Blocking) -->
+            <div class="terminal-run-banner" id="pipeline-run-panel">
+                <div class="run-banner-top">
+                    <div class="run-banner-left">
+                        <i class="fa-solid fa-circle-notch fa-spin" style="color:var(--accent-primary);"></i>
+                        <span class="run-banner-title" id="run-phase-title">Phase 1: Multi-Source Scraping</span>
+                        <span class="run-banner-msg" id="run-status-message">Harvesting arXiv, YC Catalogs & live job feeds...</span>
+                    </div>
+                    <div class="run-banner-pct" id="run-progress-pct">0%</div>
+                </div>
+                <div class="run-banner-track">
+                    <div class="run-banner-fill" id="run-progress-bar"></div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <main class="terminal-content-area">
+                <!-- Content Title & Toolbar Row -->
+                <div class="content-headline-row">
+                    <div class="content-title-stack">
+                        <h1 class="content-title-text" id="view-title">Startups Directory</h1>
+                        <span class="content-desc-text" id="view-desc">Harvested AI startups and companies directory with verified company domains.</span>
+                    </div>
+
+                    <div class="terminal-toolbar-row">
+                        <button class="btn-terminal btn-terminal-danger btn-sm" onclick="triggerClean()">
+                            <i class="fa-solid fa-trash"></i>
+                            <span>Clean Vertical</span>
+                        </button>
+                        <div class="terminal-search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="table-search-input" class="terminal-search-input" placeholder="Search records..." oninput="handleSearch(this.value)">
+                        </div>
+                        <select id="pricing-filter" class="terminal-filter-select" onchange="handleFilterChange()" style="display:none;">
+                            <option value="ALL">All Pricing Tiers</option>
+                            <option value="FREE">FREE</option>
+                            <option value="FREEMIUM">FREEMIUM</option>
+                            <option value="PAID">PAID</option>
+                            <option value="ENTERPRISE">ENTERPRISE</option>
+                        </select>
+                        <select id="role-filter" class="terminal-filter-select" onchange="handleFilterChange()" style="display:none;">
+                            <option value="ALL">All Role Families</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Research">Research</option>
+                            <option value="Product">Product</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Embedded Canonicalization Sandbox (Shown on Mappings tab) -->
+                <div class="sandbox-deck-terminal" id="sandbox-card" style="display:none;">
+                    <div class="sandbox-top-row">
+                        <span class="sandbox-title-text"><i class="fa-solid fa-flask"></i> Entity Canonicalization Sandbox</span>
+                        <span class="badge-term badge-term-neutral">RapidFuzz WRatio</span>
+                    </div>
+                    <div class="sandbox-form-row">
+                        <input type="text" id="sandbox-input" class="sandbox-term-input" value="Anthropic, PBC" placeholder="Test company name, e.g. Open AI Inc.">
+                        <button class="btn-terminal btn-terminal-primary btn-sm" onclick="testEntityResolution()">Resolve</button>
+                    </div>
+                    <div class="sandbox-diagnostics-deck">
+                        <div class="sandbox-stat-node">
+                            <span class="sandbox-stat-lbl">Normalized String</span>
+                            <span class="sandbox-stat-val" id="sb-normalized">anthropic</span>
+                        </div>
+                        <div class="sandbox-stat-node">
+                            <span class="sandbox-stat-lbl">Canonical Target</span>
+                            <span class="sandbox-stat-val" id="sb-canonical">Anthropic</span>
+                        </div>
+                        <div class="sandbox-stat-node">
+                            <span class="sandbox-stat-lbl">WRatio Score</span>
+                            <span class="sandbox-stat-val" id="sb-score" style="color:var(--status-success);">100.0 / 100</span>
+                        </div>
+                        <div class="sandbox-stat-node">
+                            <span class="sandbox-stat-lbl">Decision Method</span>
+                            <span class="sandbox-stat-val" id="sb-method">seed_match</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- High-Density Data Table -->
+                <div class="terminal-table-deck">
+                    <div class="table-scroll-window">
+                        <table class="terminal-table">
+                            <thead id="table-head">
+                                <!-- Dynamic Headers -->
+                            </thead>
+                            <tbody id="table-body">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Strip -->
+                    <div class="terminal-pagination-bar">
+                        <div id="table-range-info">Showing records</div>
+                        <div class="pagination-btn-group">
+                            <button class="btn-page-ctrl" id="btn-page-prev" onclick="prevPage()"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span id="page-indicator-text" style="font-family:var(--font-mono); padding:0 6px;">Page 1 of 1</span>
+                            <button class="btn-page-ctrl" id="btn-page-next" onclick="nextPage()"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    </div>
+
+    <!-- Structured JSON Inspector Modal -->
+    <div class="terminal-modal-mask" id="json-modal">
+        <div class="terminal-modal-dialog">
+            <div class="modal-header-band">
+                <span class="modal-header-title"><i class="fa-solid fa-code"></i> Structured Entity Payload</span>
+                <button class="btn-modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body-content">
+                <pre class="code-viewer-block" id="json-modal-content"></pre>
+            </div>
+            <div class="modal-footer-band">
+                <button class="btn-terminal btn-terminal-secondary" onclick="copyJsonModal()"><i class="fa-solid fa-copy"></i> Copy JSON</button>
+                <button class="btn-terminal btn-terminal-primary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pipeline Run Observability Telemetry Modal -->
+    <div class="terminal-modal-mask" id="run-modal">
+        <div class="terminal-modal-dialog" style="max-width: 860px;">
+            <div class="modal-header-band">
+                <span class="modal-header-title" id="run-modal-title"><i class="fa-solid fa-chart-line"></i> Pipeline Execution Telemetry</span>
+                <button class="btn-modal-close" onclick="closeRunModal()">&times;</button>
+            </div>
+            <div class="modal-body-content" id="run-modal-body">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="modal-footer-band">
+                <button class="btn-terminal btn-terminal-primary" onclick="closeRunModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dedicated Action Loading Overlay Modal -->
+    <div class="terminal-modal-mask" id="clean-modal">
+        <div class="terminal-modal-dialog" style="max-width: 460px; text-align: center; padding: 32px 24px;">
+            <div id="clean-modal-icon" style="font-size: 42px; color: var(--status-error); margin-bottom: 14px;">
+                <i class="fa-solid fa-arrows-rotate fa-spin"></i>
+            </div>
+            <h3 id="clean-modal-title" style="font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+                Processing Action...
+            </h3>
+            <p id="clean-modal-desc" style="font-size: 12px; font-family: var(--font-ui); color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
+                Executing task in background...
+            </p>
+            <div id="clean-modal-sub" style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-primary); font-weight: 600;">
+                <i class="fa-solid fa-microchip"></i> Live Autonomous Engine
+            </div>
+        </div>
+    <!-- Pre-Submission Audit Results Modal (Rich Redesign) -->
+    <div class="terminal-modal-mask" id="audit-modal">
+        <div class="terminal-modal-dialog" style="max-width: 860px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header-band">
+                <span class="modal-header-title" id="audit-modal-title">
+                    <i class="fa-solid fa-shield-halved"></i> Pre-Submission Audit Verification
+                </span>
+                <button class="btn-modal-close" onclick="closeAuditModal()">&times;</button>
+            </div>
+            <div class="modal-body-content" style="padding: 20px; overflow-y: auto;">
+                <!-- Status Banner -->
+                <div id="audit-banner-box" style="background: rgba(16, 185, 129, 0.08); border: 1px solid var(--status-success); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div id="audit-banner-icon" style="font-size: 32px; color: var(--status-success);">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div>
+                            <div id="audit-banner-title" style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--text-primary);">
+                                ALL ZERO-HALLUCINATION AUDIT CHECKS PASSED CLEANLY
+                            </div>
+                            <div id="audit-banner-subtitle" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                                Provenance URLs verified, zero fabrication detected, schema rules enforced.
+                            </div>
+                        </div>
+                    </div>
+                    <span id="audit-banner-badge" class="nav-count-badge" style="background: var(--status-success); color: #000; font-weight: 700; padding: 4px 10px; font-size: 11px;">
+                        100% VERIFIED
+                    </span>
+                </div>
+
+                <!-- Audit Summary Grid -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+                    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 12px; border-radius: var(--radius-sm); text-align: center;">
+                        <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total Audited</div>
+                        <div id="audit-stat-total" style="font-size: 20px; font-weight: 700; color: var(--text-primary); font-family: var(--font-mono); margin-top: 4px;">0</div>
+                    </div>
+                    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 12px; border-radius: var(--radius-sm); text-align: center;">
+                        <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Hard Failures</div>
+                        <div id="audit-stat-errors" style="font-size: 20px; font-weight: 700; color: var(--status-success); font-family: var(--font-mono); margin-top: 4px;">0</div>
+                    </div>
+                    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 12px; border-radius: var(--radius-sm); text-align: center;">
+                        <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Fabrication Violations</div>
+                        <div id="audit-stat-fabrication" style="font-size: 20px; font-weight: 700; color: var(--accent-primary); font-family: var(--font-mono); margin-top: 4px;">0</div>
+                    </div>
+                    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 12px; border-radius: var(--radius-sm); text-align: center;">
+                        <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">URL Provenance</div>
+                        <div id="audit-stat-url" style="font-size: 20px; font-weight: 700; color: var(--status-success); font-family: var(--font-mono); margin-top: 4px;">100%</div>
+                    </div>
+                </div>
+
+                <!-- Provenance Breakdown Grid -->
+                <h4 style="font-family: var(--font-display); font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text-primary);">
+                    <i class="fa-solid fa-list-check" style="color: var(--accent-primary);"></i> Vertical Provenance Breakdown
+                </h4>
+                <div id="audit-verticals-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Raw Log Accordion -->
+                <div style="margin-top: 10px;">
+                    <button class="btn-terminal btn-terminal-secondary btn-sm" onclick="toggleRawAuditLog()" style="width: 100%; justify-content: space-between;">
+                        <span><i class="fa-solid fa-terminal"></i> View Full Verification Output Log</span>
+                        <i class="fa-solid fa-chevron-down" id="audit-log-chevron"></i>
+                    </button>
+                    <pre class="code-viewer-block" id="audit-modal-content" style="display: none; max-height: 240px; font-family: var(--font-mono); font-size: 11px; margin-top: 8px;"></pre>
+                </div>
+            </div>
+            <div class="modal-footer-band">
+                <button class="btn-terminal btn-terminal-primary" onclick="closeAuditModal()">Close Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Old Auth modal removed as we now use landing page -->
+
+    <!-- Application Script -->
+    <script src="app.js?v=19.0.0"></script>
+</body>
+</html>
