@@ -17,7 +17,6 @@ import asyncio
 import logging
 import os
 import sys
-import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from dotenv import load_dotenv

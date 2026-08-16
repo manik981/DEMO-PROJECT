@@ -164,7 +164,7 @@ def build_pdf(filename="architecture.pdf"):
         "AETHERIA is a high-throughput, enterprise-grade multi-vertical intelligence pipeline harvesting live structured data across "
         "<b>Startups, Products, Research Papers, Jobs, and News</b>. The platform enforces a strict <b>Deterministic-First Quality Gate</b>: "
         "whenever structured feeds, verified seed catalogs, or official REST APIs provide complete payloads, the engine completely bypasses "
-        "LLM inference (0 token cost, sub-second execution latency). Unstructured or partial payloads are routed through a resilient "
+        "LLM inference (0 token cost, deterministic execution). Unstructured or partial payloads are routed through a resilient "
         "multi-tier LLM fallback router with strict Pydantic v2 schema enforcement and 1-shot self-healing validation.",
         body_style
     ))
@@ -172,9 +172,10 @@ def build_pdf(filename="architecture.pdf"):
     story.append(Paragraph("2. Concurrency Baseline vs. 500k+ Production Scale Architecture", h1_style))
     story.append(Paragraph(
         "<b>Single-Node Demo Baseline (Current Implementation):</b> Concurrency is governed by compartmentalized asynchronous pools: "
-        "<code>asyncio.Semaphore(15)</code> for HTTP network crawlers with 4s bounded timeouts and domain circuit breakers, and "
-        "<code>asyncio.Semaphore(3)</code> for LLM router inference. Ingested payloads stream to user-scoped JSONL partitions under "
-        "<code>data/raw/{user_id}/</code>.<br/>"
+        "<code>asyncio.Semaphore(15)</code> for HTTP network crawlers with bounded timeouts and domain circuit breakers, and "
+        "<code>asyncio.Semaphore(3)</code> for LLM router inference. In benchmark testing, the pipeline processed up to 500 records per "
+        "vertical (~2,500 records across 5 verticals) in approximately 60 seconds average, with execution time primarily dependent on "
+        "external API/feed response latency.<br/>"
         "<b>500K+ Horizontal Production Scale-Out:</b> Workers are completely stateless. Scaling to 500,000+ records requires zero structural "
         "refactoring: ingestion scales horizontally across worker pools managed by <b>Celery / Arq</b> over <b>Redis</b> task queues "
         "sharded by source domain. High-volume PostgreSQL persistence utilizes <b>PgBouncer connection pooling</b>, partitioned tables, "
@@ -186,7 +187,7 @@ def build_pdf(filename="architecture.pdf"):
     arch_data = [
         [
             Paragraph("<b>CURRENT IMPLEMENTED ARCHITECTURE</b><br/>"
-                      "• 5 Parallel Harvesters (arXiv, YC, HF Spaces, RSS, APIs)<br/>"
+                      "• 5 Parallel Harvesters (Crossref & arXiv APIs, YC, HF Spaces, RSS)<br/>"
                       "• Resilient Async HTTP Client with Domain Circuit Breakers<br/>"
                       "• Hybrid Structuring Gate (Deterministic Bypass &gt; 90%)<br/>"
                       "• RapidFuzz Deterministic Entity Canonicalization Engine<br/>"
@@ -222,11 +223,11 @@ def build_pdf(filename="architecture.pdf"):
     story.append(Paragraph("3. Multi-Source Ingestion & Verification Matrix", h1_style))
     matrix_data = [
         [Paragraph("Vertical", table_header_style), Paragraph("Primary Sources & APIs", table_header_style), Paragraph("Ingestion Strategy", table_header_style), Paragraph("Deterministic Verification & Quality Check", table_header_style)],
-        [Paragraph("<b>Research Papers</b>", table_cell_bold), Paragraph("Crossref REST API (/works)", table_cell_style), Paragraph("Async JSON Batch Streaming", table_cell_style), Paragraph("Live GitHub REST API stars enrichment; strict null on 404", table_cell_style)],
-        [Paragraph("<b>Startups</b>", table_cell_bold), Paragraph("Seed Startup Registry (50+ firms)", table_cell_style), Paragraph("Curated Canonical Harvester", table_cell_style), Paragraph("Legal suffix stripping, RapidFuzz WRatio, zero-fabrication headcount", table_cell_style)],
-        [Paragraph("<b>AI Products</b>", table_cell_bold), Paragraph("Hugging Face Spaces Hub API", table_cell_style), Paragraph("Official Spaces REST Client", table_cell_style), Paragraph("Enum mapping (FREE, FREEMIUM, PAID, ENTERPRISE)", table_cell_style)],
-        [Paragraph("<b>24h AI News</b>", table_cell_bold), Paragraph("GNews, Guardian, DataCube, Noozra", table_cell_style), Paragraph("Multi-Adapter REST & RSS", table_cell_style), Paragraph("Strict 24h window (now-24h ≤ date ≤ now), URL provenance check", table_cell_style)],
-        [Paragraph("<b>24h AI Jobs</b>", table_cell_bold), Paragraph("Arbeitnow, RapidAPI Indeed, USAJOBS", table_cell_style), Paragraph("Multi-Adapter JSON & RSS", table_cell_style), Paragraph("AI domain relevance filter, role classifier, 24h date audit", table_cell_style)],
+        [Paragraph("<b>Research Papers</b>", table_cell_bold), Paragraph("Crossref REST API (/works) & arXiv API", table_cell_style), Paragraph("Async JSON Batch Streaming", table_cell_style), Paragraph("Live GitHub REST API stars enrichment; strict null on 404", table_cell_style)],
+        [Paragraph("<b>Startups</b>", table_cell_bold), Paragraph("650+ Seed Registry, HF AI Orgs API, HN AI Launches", table_cell_style), Paragraph("Dynamic Feeds & Canonical Harvester", table_cell_style), Paragraph("AI sector classification, legal suffix stripping, zero-fabrication headcount", table_cell_style)],
+        [Paragraph("<b>AI Products</b>", table_cell_bold), Paragraph("HF Spaces Hub (7 Endpoints), GitHub AI Repos", table_cell_style), Paragraph("Multi-Endpoint REST & 200+ Seed", table_cell_style), Paragraph("Enum mapping (FREE, FREEMIUM, PAID, ENTERPRISE)", table_cell_style)],
+        [Paragraph("<b>24h AI News</b>", table_cell_bold), Paragraph("40+ Feeds (DeepMind, OpenAI, BAIR, KDnuggets) + 5 Adapters", table_cell_style), Paragraph("Multi-Publisher RSS & API", table_cell_style), Paragraph("Strict 24h window (now-24h ≤ date ≤ now), is_strictly_ai_news gate", table_cell_style)],
+        [Paragraph("<b>24h AI Jobs</b>", table_cell_bold), Paragraph("20 Feeds (RemoteOK, Remotive, WWR, HN) + 7 Adapters", table_cell_style), Paragraph("Multi-Stream JSON & RSS", table_cell_style), Paragraph("AI & Data Science role classifier, 24h date audit", table_cell_style)],
     ]
     t_matrix = Table(matrix_data, colWidths=[80, 136, 126, 170])
     t_matrix.setStyle(TableStyle([
@@ -398,7 +399,7 @@ def build_pdf(filename="architecture.pdf"):
         "<b>Primary Storage (Supabase PostgreSQL):</b> Chosen for relational schema enforcement, ACID guarantees, Row-Level Security, "
         "and high-efficiency filtering across 11 relational tables.<br/>"
         "<b>Asynchronous Google Sheets Export (6 Synchronized Tabs):</b> Google Sheets sync is decoupled from pipeline execution, "
-        "dispatched in a non-blocking background thread to preserve sub-10s pipeline latency. Accurately provisions 6 worksheet tabs: "
+        "dispatched in a non-blocking background thread to preserve core pipeline execution performance. Accurately provisions 6 worksheet tabs: "
         "<code>Startups</code>, <code>Products</code>, <code>Research Papers</code>, <code>Jobs</code>, <code>News</code>, and <code>Entity Mapping Log</code>. "
         "Vertical cleanup actions dynamically synchronize with remote Google Sheets tabs, wiping rows while preserving headers.<br/>"
         "<b>Why NOT Graph Database (Neo4j) at MVP:</b> Access patterns are vertical-filtered bulk queries and time-windowed freshness lookups. "

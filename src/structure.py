@@ -14,7 +14,6 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Type, TypeVar
 from dotenv import load_dotenv
@@ -23,7 +22,6 @@ from dotenv import load_dotenv
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.db.supabase_client import get_supabase_client
 from src.llm.extractor import LLMExtractor
 from src.schemas import (
     JobEntity,

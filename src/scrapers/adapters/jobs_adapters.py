@@ -2,7 +2,6 @@
 
 import logging
 import os
-import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional
 import aiohttp
 

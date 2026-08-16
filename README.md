@@ -9,10 +9,10 @@ An end-to-end multi-vertical ingestion engine designed for high-throughput struc
 ```mermaid
 flowchart TD
     subgraph PhaseI_II["Phase I & II: Multi-Source Acquisition & Scraping"]
-        A1["Crossref REST API (/works)"] --> P1["Research Papers"]
-        A2["Seed Startup Registry & HF Spaces Hub"] --> P2["Startups & Products"]
-        A3["GNews, Guardian, DataCube, Noozra"] --> P3["24h Fresh News"]
-        A4["Arbeitnow, Indeed RapidAPI, USAJOBS, RemoteOK"] --> P4["24h Fresh Jobs"]
+        A1["Crossref REST API (/works) & arXiv API"] --> P1["Research Papers"]
+        A2["650+ Seed Registry, HF Orgs & Spaces Hub"] --> P2["Startups & Products"]
+        A3["40+ AI Feeds (DeepMind, OpenAI, BAIR, KDnuggets) + 5 Adapters"] --> P3["24h Fresh News"]
+        A4["20 AI Job Feeds + 7 REST Adapters (USAJOBS, Indeed, RemoteOK)"] --> P4["24h Fresh Jobs"]
     end
 
     subgraph PhaseII_Audit["Freshness & Date Resolution"]
