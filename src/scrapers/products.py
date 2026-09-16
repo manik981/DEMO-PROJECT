@@ -271,7 +271,10 @@ class ProductsScraper:
                                 break
                             owner = repo.get("owner", {}).get("login") or "AI Contributor"
                             repo_url = repo.get("html_url")
-                            if not repo_url or repo_url in self.seen_urls:
+                            if not repo_url:
+                                continue
+                            if repo_url in self.seen_urls:
+                                self.stats["duplicates_skipped"] += 1
                                 continue
 
                             entity = ProductEntity(

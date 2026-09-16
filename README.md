@@ -279,7 +279,7 @@ pytest tests/ -v
 ## 🔍 Known Limitations & Architectural Notes
 
 1. **Startups Provenance & Volume Cap**:
-   - Startups are sourced from the curated **Seed Startup Registry** (`source.name = "Seed Startup Registry"`) with verified company domain URLs. `content.data.employeeCount` is set strictly to `null` by design across all records to guarantee 100% zero fabrication. The startup catalog is permanently capped at the finite size of the seed registry (~54 canonical companies) to prevent dead endpoint 404 fallbacks and unverified scraping.
+   - Startups are sourced from the curated **Seed Startup Registry** (`source.name = "Seed Startup Registry"`) with verified company domain URLs. `content.data.employeeCount` is set strictly to `null` by design across all records to guarantee 100% zero fabrication. The startup catalog draws from the comprehensive seed registry (550+ canonical companies) and dynamic feeds to prevent dead endpoint 404 fallbacks and unverified scraping.
 2. **Products Provenance**:
    - AI products are harvested live from the official **Hugging Face Spaces Hub API** (`https://huggingface.co/api/spaces?limit=300&full=true`, labeled `Hugging Face Spaces Hub`) with fallback to the curated **Verified AI Product Registry** (`source.name = "Verified AI Product Registry"`).
 3. **Papers With Code Sunset**:

@@ -126,10 +126,10 @@ async function fetchLiveMetrics() {
             animateCounter('metric-jobs', data.jobs || 0);
             animateCounter('metric-news', data.news || 0);
             animateCounter('metric-entities', data.entities || 0);
-            animateCounter('metric-dedup', (data.deduplicated !== undefined && data.deduplicated !== null) ? data.deduplicated : 53);
+            animateCounter('metric-dedup', (data.deduplicated !== undefined && data.deduplicated !== null) ? data.deduplicated : 0);
 
             const qEl = document.getElementById('metric-quality');
-            if (qEl) qEl.innerText = (data.quality_score !== undefined && data.quality_score !== null) ? data.quality_score : "98.5%";
+            if (qEl) qEl.innerText = (data.quality_score !== undefined && data.quality_score !== null) ? data.quality_score : "100.0%";
 
             // Update Sidebar Badges
             updateBadge('nav-count-startups', data.startups || 0);

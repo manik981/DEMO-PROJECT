@@ -463,6 +463,7 @@ class PapersScraper:
                         continue
                     paper_url = entity.content.paper_url
                     if paper_url in self.seen_paper_ids:
+                        self.stats["duplicates_skipped"] += 1
                         continue
 
                     self.seen_paper_ids.add(paper_url)

@@ -210,7 +210,11 @@ class StartupsScraper:
                     url = link_elem.text.strip() if link_elem is not None and link_elem.text else ""
                     desc = desc_elem.text.strip() if desc_elem is not None and desc_elem.text else ""
 
-                    if not entity_name or len(entity_name) < 2 or not url or url in self.seen_urls:
+                    if not entity_name or len(entity_name) < 2 or not url:
+                        continue
+
+                    if url in self.seen_urls:
+                        self.stats["duplicates_skipped"] += 1
                         continue
 
                     category = infer_startup_category(entity_name, desc)
@@ -328,6 +332,7 @@ class StartupsScraper:
                         continue
                     homepage = org.get("homepage") or f"https://huggingface.co/{org_id}"
                     if homepage in self.seen_urls:
+                        self.stats["duplicates_skipped"] += 1
                         continue
 
                     category = infer_startup_category(str(org_name), str(org_id))

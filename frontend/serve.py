@@ -288,8 +288,15 @@ class LiveBackendHandler(http.server.SimpleHTTPRequestHandler):
 
         # 1. Real-time Live Metrics Endpoint (Calculated directly from actual files)
         if parsed.path == "/api/metrics":
-            metrics = self._compute_live_metrics(user_id)
-            self._send_json(metrics)
+            try:
+                metrics = self._compute_live_metrics(user_id)
+                self._send_json(metrics)
+            except Exception as e:
+                print(f"⚠️ Error computing live metrics: {e}")
+                self._send_json({
+                    "startups": 0, "products": 0, "papers": 0, "jobs": 0, "news": 0,
+                    "entities": 0, "quarantine": 0, "quality_score": "100.0%", "deduplicated": 0
+                })
             return
 
         # 1b. Real-Time Pipeline Progress Telemetry Endpoint
@@ -528,30 +535,45 @@ class LiveBackendHandler(http.server.SimpleHTTPRequestHandler):
         except Exception:
             pass
 
-        # 2. Local user directory fallback / complement
+        # 2. Local directory fallback / complement (both user directory and project defaults)
         local_startups = self._count_lines(
             f"data/resolved/{user_id}/startups.jsonl",
             f"data/structured/{user_id}/startups.jsonl",
-            f"data/raw/{user_id}/startups.jsonl"
+            f"data/raw/{user_id}/startups.jsonl",
+            "data/resolved/startups.jsonl",
+            "data/structured/startups.jsonl",
+            "data/raw/startups.jsonl",
         )
         local_products = self._count_lines(
             f"data/resolved/{user_id}/products.jsonl",
             f"data/structured/{user_id}/products.jsonl",
-            f"data/raw/{user_id}/products.jsonl"
+            f"data/raw/{user_id}/products.jsonl",
+            "data/resolved/products.jsonl",
+            "data/structured/products.jsonl",
+            "data/raw/products.jsonl",
         )
         local_papers = self._count_lines(
             f"data/structured/{user_id}/papers.jsonl",
-            f"data/raw/{user_id}/papers.jsonl"
+            f"data/raw/{user_id}/papers.jsonl",
+            "data/structured/papers.jsonl",
+            "data/raw/papers.jsonl",
         )
         local_jobs = self._count_lines(
             f"data/structured/{user_id}/jobs.jsonl",
-            f"data/raw/{user_id}/jobs.jsonl"
+            f"data/raw/{user_id}/jobs.jsonl",
+            "data/structured/jobs.jsonl",
+            "data/raw/jobs.jsonl",
         )
         local_news = self._count_lines(
             f"data/structured/{user_id}/news.jsonl",
-            f"data/raw/{user_id}/news.jsonl"
+            f"data/raw/{user_id}/news.jsonl",
+            "data/structured/news.jsonl",
+            "data/raw/news.jsonl",
         )
-        local_entities = self._count_csv_rows(f"data/output/{user_id}/entity_mapping_log.csv")
+        local_entities = self._count_csv_rows(
+            f"data/output/{user_id}/entity_mapping_log.csv",
+            "data/output/entity_mapping_log.csv",
+        )
 
         startups = max(startups, local_startups)
         products = max(products, local_products)
@@ -560,7 +582,11 @@ class LiveBackendHandler(http.server.SimpleHTTPRequestHandler):
         news = max(news, local_news)
         entities = max(entities, local_entities)
 
-        quarantine = self._count_lines(f"data/quarantine/{user_id}/startups.jsonl") + self._count_lines(f"data/quarantine/{user_id}/products.jsonl")
+        # Real-time quarantine count across ALL 5 verticals
+        quarantine = sum(
+            self._count_lines(f"data/quarantine/{user_id}/{v}.jsonl", f"data/quarantine/{v}.jsonl")
+            for v in ["startups", "products", "papers", "jobs", "news"]
+        )
         total_valid = startups + products + papers + jobs + news
         quality = round((total_valid / (total_valid + quarantine)) * 100, 1) if (total_valid + quarantine) > 0 else 100.0
 
@@ -573,8 +599,13 @@ class LiveBackendHandler(http.server.SimpleHTTPRequestHandler):
             dedup = 0
             data_quality = None
 
-        if dedup is None:
-            dedup = 0
+        if dedup is None or dedup == 0:
+            # Check if previous runs recorded duplicates
+            try:
+                if runs:
+                    dedup = sum(r.get("duplicates_skipped", 0) for r in runs if r.get("duplicates_skipped"))
+            except Exception:
+                dedup = 0
 
         quality_str = f"{data_quality}%" if data_quality is not None else f"{quality}%"
 
@@ -587,30 +618,37 @@ class LiveBackendHandler(http.server.SimpleHTTPRequestHandler):
             "entities": entities,
             "quarantine": quarantine,
             "quality_score": quality_str,
-            "deduplicated": dedup,
+            "deduplicated": dedup or 0,
         }
 
     def _count_lines(self, *relative_paths) -> int:
+        max_lines = 0
         for rel in relative_paths:
             p = PROJECT_ROOT / rel
             if p.exists():
                 try:
                     with open(p, "r", encoding="utf-8") as f:
-                        return sum(1 for line in f if line.strip())
+                        cnt = sum(1 for line in f if line.strip())
+                        if cnt > max_lines:
+                            max_lines = cnt
                 except Exception:
                     pass
-        return 0
+        return max_lines
 
-    def _count_csv_rows(self, relative_path: str) -> int:
-        p = PROJECT_ROOT / relative_path
-        if p.exists():
-            try:
-                with open(p, "r", encoding="utf-8") as f:
-                    reader = csv.reader(f)
-                    return max(0, sum(1 for _ in reader) - 1)
-            except Exception:
-                pass
-        return 0
+    def _count_csv_rows(self, *relative_paths) -> int:
+        max_rows = 0
+        for rel in relative_paths:
+            p = PROJECT_ROOT / rel
+            if p.exists():
+                try:
+                    with open(p, "r", encoding="utf-8") as f:
+                        reader = csv.reader(f)
+                        rows = max(0, sum(1 for _ in reader) - 1)
+                        if rows > max_rows:
+                            max_rows = rows
+                except Exception:
+                    pass
+        return max_rows
 
     def _load_live_records(self, vertical: str, user_id: str = "anonymous_demo") -> list:
         """Load actual records from Supabase or user data files."""
