@@ -242,7 +242,7 @@ tab so a reviewer can inspect them. A production system would add semantic entai
 ## 12. Token budgeting, rate limits and retries
 
 `_fit_output_budget` estimates prompt tokens as `characters / 3.5 + 32 per message`, then caps completion so prompt +
-completion ≤ `MAX_REQUEST_TOKENS` (16,000). The estimate is deliberately conservative: on the measured run it estimated
+completion ≤ `MAX_REQUEST_TOKENS` (64,000). The estimate is deliberately conservative: on the measured run it estimated
 3,345 prompt tokens where the provider reported 2,682 (Groq-era measurement; not re-run against Agnes).
 
 Retry policy in `_chat` (the only retry owner; the SDK client is created with `max_retries=0`):

@@ -111,6 +111,7 @@ contradictions and an injected instruction) and writes `evaluation/results.json`
 
 These are one-run results on one synthetic document, matched lexically. They are not a benchmark and do not
 generalise. The weak ambiguity/risk scores are real and are discussed in `docs/technical_approach.md`.
+
 ## Project layout
 
 ```

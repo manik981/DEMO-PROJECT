@@ -1,8 +1,10 @@
-# Secrets
+# Secrets — never commit these
 .env
 .env.*
 !.env.example
 .streamlit/secrets.toml
+*.pem
+*.key
 
 # Python
 __pycache__/
