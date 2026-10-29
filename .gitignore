@@ -1,91 +1,32 @@
-# Python Bytecode & Cache
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual Environments
-.venv/
-venv/
-ENV/
-env/
-
-# Environment Variables, Secrets & OAuth Credentials (CRITICAL)
+# Secrets
 .env
 .env.*
-env/
-.env/
-*.env
 !.env.example
-*.pem
-*.key
-*.cert
-credentials.json
-*credentials*.json
-*service_account*.json
-token.json
+.streamlit/secrets.toml
 
-# Database & SQL Files
-*.sql
-*.sqlite
-*.sqlite3
-*.db
-
-# Local Pipeline Data & Quarantine (Preserve Seed Data)
-data/raw/*
-data/structured/*
-data/resolved/*
-data/quarantine/*
-data/output/*
-data/telemetry/*
-!data/raw/.gitkeep
-!data/structured/.gitkeep
-!data/resolved/.gitkeep
-!data/quarantine/.gitkeep
-!data/output/.gitkeep
-!data/telemetry/.gitkeep
-!data/seed/
-!data/seed/canonical_startups.json
-
-# Temporary & Scratch Files
-scratch/
-scratch_*.py
-*.tmp
-
-# Testing & Coverage
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
 .pytest_cache/
-pytest_cache/
-*_cache/
+.ruff_cache/
+.mypy_cache/
 .coverage
 htmlcov/
 
-# Logs
+# App artifacts
+evaluation/results.json
+evaluation/results/
 *.log
-logs/
 
-# IDE & Editor Configurations
-.idea/
-.vscode/
-*.swp
-*.swo
+# OS / editors
 .DS_Store
 Thumbs.db
+.idea/
+.vscode/
 
+# Build
+dist/
+build/
