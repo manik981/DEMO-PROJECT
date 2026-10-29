@@ -8,6 +8,7 @@ from datetime import date
 
 from .analyzer import AnalysisResult
 from .schemas import DocumentAnalysis
+from .validator import flagged_checks
 
 _KIND_LABELS = {
     "explicit": "Explicit (client stated)",
@@ -197,8 +198,7 @@ def build_markdown_report(result: AnalysisResult) -> str:
         "",
         "## 9. Solution recommendations",
         "",
-        "> All architecture, technology and phase proposals below are AI recommendations, "
-        "not confirmed client requirements.",
+        "> These are AI suggestions, not confirmed RFP requirements.",
         "",
         "### Potential architecture",
         "",
@@ -255,10 +255,10 @@ def build_markdown_report(result: AnalysisResult) -> str:
         f"({result.evidence.verification_rate:.0%} traceability).",
         "",
         "The audit checks that cited pages exist and that evidence words occur in the cited page text. "
-        "It is a lexical check, not a semantic guarantee. All flagged items require human review.",
+        "It is a wording check, not a guarantee of correct interpretation. Flagged items require human review.",
         "",
     ]
-    flagged = [check for check in result.evidence.checks if not check.verified]
+    flagged = flagged_checks(result.evidence)
     if flagged:
         lines += [
             _table(
@@ -267,8 +267,10 @@ def build_markdown_report(result: AnalysisResult) -> str:
             ),
             "",
         ]
+    elif result.evidence.total:
+        lines += ["All sources were verified successfully.", ""]
     else:
-        lines += ["All generated citations passed the lightweight verification check.", ""]
+        lines += ["No citations were generated, so there was nothing to verify.", ""]
 
     if result.warnings:
         lines += ["## 12. Processing warnings", ""]

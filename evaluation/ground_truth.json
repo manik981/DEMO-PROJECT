@@ -1,0 +1,300 @@
+{
+  "dataset_name": "synthetic_riverton_permit_portal",
+  "source_file": "sample_data/sample_rfp.pdf",
+  "document_status": "SYNTHETIC - fictional city, created for testing only; not a real client document",
+  "labelling_note": "Small, manually annotated dataset. Ground truth is limited to requirements and gaps explicitly present in the synthetic RFP. It is not a representative benchmark and metrics do not generalize.",
+  "functional_requirements": [
+    {
+      "id": "GT-FR-01",
+      "canonical": "Applicants can create an account, submit a permit application online, and save a draft.",
+      "aliases": ["Online permit application submission with draft saving", "Applicant account creation and saved draft applications"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-02",
+      "canonical": "Support at least six permit types at launch: residential renovation, fence, signage, food service, short-term rental and special event.",
+      "aliases": ["Six permit types supported at launch", "Multiple permit categories including renovation, fence, signage, food service, rental and events"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-03",
+      "canonical": "Applicants upload supporting documents in PDF, PNG or JPEG format with a 10 MB per-file limit.",
+      "aliases": ["Document upload of PDF PNG JPEG files up to 10MB", "File attachment validation and size limit"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-04",
+      "canonical": "Calculate and collect permit fees online through the City's existing Stripe merchant account and email a receipt automatically.",
+      "aliases": ["Online fee payment via Stripe with automatic email receipt", "Permit fee calculation and payment collection"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-05",
+      "canonical": "Send email and SMS notifications when an application is received, when information is requested, and when a decision is issued.",
+      "aliases": ["Email and SMS status notifications", "Applicant notifications for application status changes"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-06",
+      "canonical": "Provide City staff a review dashboard with the queue, application details, uploaded documents and a complete audit history of status changes.",
+      "aliases": ["Staff review dashboard with queue and audit history", "Permit reviewer dashboard displaying applications and documents"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-07",
+      "canonical": "Support five roles: applicant, intake clerk, permit reviewer, supervisor and system administrator.",
+      "aliases": ["Five user roles with role-based access", "Applicant clerk reviewer supervisor administrator roles"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-08",
+      "canonical": "Supervisors can reassign applications and export a monthly PDF report.",
+      "aliases": ["Application reassignment and monthly PDF reporting", "Supervisor workload reassignment and report export"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-09",
+      "canonical": "The public can search approved permits by address, permit type and date.",
+      "aliases": ["Public permit search by address type and date", "Searchable approved permit registry"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-10",
+      "canonical": "Retain all application records and audit logs for seven years.",
+      "aliases": ["Seven-year record and audit log retention", "Retention of permit records for 7 years"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-11",
+      "canonical": "Applicants can request an inspection online and view inspection results.",
+      "aliases": ["Online inspection request and result viewing", "Inspection scheduling and results in the portal"],
+      "page": 1
+    },
+    {
+      "id": "GT-FR-12",
+      "canonical": "Provide a user-friendly interface and reasonable response times for all pages.",
+      "aliases": ["User-friendly interface with reasonable page response times", "Usability and general responsiveness requirement"],
+      "page": 1
+    }
+  ],
+  "non_functional_requirements": [
+    {
+      "id": "GT-NFR-01",
+      "canonical": "Public portal availability of 99.9 percent measured monthly, excluding scheduled maintenance.",
+      "aliases": ["99.9% uptime availability", "Monthly availability target of 99.9 percent"],
+      "page": 2
+    },
+    {
+      "id": "GT-NFR-02",
+      "canonical": "Support 500 concurrent users.",
+      "aliases": ["Capacity for 500 simultaneous users", "500 concurrent user capacity"],
+      "page": 2
+    },
+    {
+      "id": "GT-NFR-03",
+      "canonical": "Support 1,000 concurrent users during peak periods.",
+      "aliases": ["Peak capacity of 1,000 concurrent users", "1,000 simultaneous users in peak periods"],
+      "page": 2
+    },
+    {
+      "id": "GT-NFR-04",
+      "canonical": "Public-facing portal conforms to WCAG 2.1 Level AA.",
+      "aliases": ["WCAG 2.1 AA accessibility compliance", "Accessibility standard WCAG 2.1 AA for public pages"],
+      "page": 2
+    },
+    {
+      "id": "GT-NFR-05",
+      "canonical": "Encrypt all data in transit and at rest.",
+      "aliases": ["Data encryption in transit and at rest", "Encryption of stored and transmitted permit data"],
+      "page": 2
+    },
+    {
+      "id": "GT-NFR-06",
+      "canonical": "Follow appropriate security practices.",
+      "aliases": ["Appropriate security practices required", "General security practice compliance"],
+      "page": 2
+    },
+    {
+      "id": "GT-NFR-07",
+      "canonical": "Collect only the personal information necessary for permits and publish a privacy notice.",
+      "aliases": ["Data minimization and published privacy notice", "Privacy notice and limited PII collection"],
+      "page": 2
+    },
+    {
+      "id": "GT-NFR-08",
+      "canonical": "Each page loads in under two seconds for 95 percent of requests; another section states all pages must respond within five seconds.",
+      "aliases": ["Page load performance under 2 seconds and 5 second response target", "Performance requirement for page response times"],
+      "page": 2
+    },
+    {
+      "id": "GT-NFR-09",
+      "canonical": "Provide source code, deployment documentation and administrator training at handover.",
+      "aliases": ["Source code and deployment documentation handover", "Administrator training and handover materials"],
+      "page": 2
+    }
+  ],
+  "technical_requirements": [
+    {
+      "id": "GT-TR-01",
+      "canonical": "Integrate with Tyler Munis ERP for permit fee posting and general ledger reconciliation.",
+      "aliases": ["Tyler Munis ERP integration for fees and general ledger", "ERP fee posting integration"],
+      "page": 2
+    },
+    {
+      "id": "GT-TR-02",
+      "canonical": "City staff single sign-on through Microsoft Entra ID (Azure AD); public applicants use local accounts.",
+      "aliases": ["Microsoft Entra ID Azure AD SSO for staff", "SSO integration with Azure AD"],
+      "page": 2
+    },
+    {
+      "id": "GT-TR-03",
+      "canonical": "Prefer AWS deployment in the us-east-1 region.",
+      "aliases": ["AWS us-east-1 hosting preference", "Amazon Web Services deployment preference"],
+      "page": 2
+    },
+    {
+      "id": "GT-TR-04",
+      "canonical": "PostgreSQL is familiar and acceptable, but no database is mandated.",
+      "aliases": ["PostgreSQL preferred but not required", "No mandated database, PostgreSQL acceptable"],
+      "page": 2
+    },
+    {
+      "id": "GT-TR-05",
+      "canonical": "React frontend is preferred but not required.",
+      "aliases": ["React preferred frontend", "React frontend optional"],
+      "page": 2
+    },
+    {
+      "id": "GT-TR-06",
+      "canonical": "Send SMS through a commercial messaging provider; provider not selected.",
+      "aliases": ["Commercial SMS provider required and undecided", "SMS gateway integration with unspecified provider"],
+      "page": 2
+    },
+    {
+      "id": "GT-TR-07",
+      "canonical": "Provide a disaster recovery plan, but RTO and RPO are not defined.",
+      "aliases": ["Disaster recovery plan required with undefined RTO RPO", "DR plan with recovery objectives not specified"],
+      "page": 2
+    }
+  ],
+  "missing_information": [
+    {
+      "id": "GT-MI-01",
+      "canonical": "Expected application or transaction volume",
+      "aliases": ["Expected user volume", "Permit application volume", "Transaction volume forecast", "Expected number of applications"],
+      "priority": "High"
+    },
+    {
+      "id": "GT-MI-02",
+      "canonical": "Data migration inventory, record count and data quality",
+      "aliases": ["Migration scope and data quality", "Current database inventory and record count", "Unknown data quality for migration"],
+      "priority": "High"
+    },
+    {
+      "id": "GT-MI-03",
+      "canonical": "Disaster recovery recovery time and recovery point objectives (RTO/RPO)",
+      "aliases": ["Recovery objectives RTO RPO", "Disaster recovery targets", "Backup recovery time objective"],
+      "priority": "High"
+    },
+    {
+      "id": "GT-MI-04",
+      "canonical": "Incident response service level and support hours",
+      "aliases": ["Support SLA and incident response times", "Service level agreement for support", "Support hours and escalation"],
+      "priority": "High"
+    },
+    {
+      "id": "GT-MI-05",
+      "canonical": "Post-launch ownership of cloud operations",
+      "aliases": ["Cloud operations ownership after launch", "Who operates the system post-launch", "Ongoing operations responsibility"],
+      "priority": "Medium"
+    },
+    {
+      "id": "GT-MI-06",
+      "canonical": "SMS provider selection",
+      "aliases": ["Which SMS gateway or messaging provider", "SMS vendor not selected"],
+      "priority": "Medium"
+    },
+    {
+      "id": "GT-MI-07",
+      "canonical": "Responsibility for accessibility testing",
+      "aliases": ["Accessibility testing ownership", "Who performs WCAG testing", "Accessibility audit responsibility"],
+      "priority": "Medium"
+    },
+    {
+      "id": "GT-MI-08",
+      "canonical": "Proposal submission deadline",
+      "aliases": ["Submission deadline date", "RFP due date", "Deadline for proposals"],
+      "priority": "High"
+    },
+    {
+      "id": "GT-MI-09",
+      "canonical": "Implementation budget and funding approval",
+      "aliases": ["Project budget", "Funding and budget amount", "Budget not approved"],
+      "priority": "High"
+    }
+  ],
+  "ambiguities": [
+    {
+      "id": "GT-AM-01",
+      "canonical": "Concurrent user target conflicts: 500 users in one statement and 1,000 during peak in another.",
+      "status": "confirmed",
+      "page": 2
+    },
+    {
+      "id": "GT-AM-02",
+      "canonical": "Performance target conflicts: page load under two seconds versus all pages responding within five seconds.",
+      "status": "confirmed",
+      "page": 2
+    },
+    {
+      "id": "GT-AM-03",
+      "canonical": "Launch scope conflicts: all functionality required at launch versus phased launch with inspections and search in Q4.",
+      "status": "possible",
+      "page": 3
+    },
+    {
+      "id": "GT-AM-04",
+      "canonical": "Reasonable response times and user-friendly interface are undefined and unmeasurable.",
+      "status": "possible",
+      "page": 1
+    },
+    {
+      "id": "GT-AM-05",
+      "canonical": "Appropriate security practices is undefined and not testable.",
+      "status": "possible",
+      "page": 2
+    }
+  ],
+  "risks": [
+    {
+      "id": "GT-RK-01",
+      "canonical": "ERP integration uncertainty due to missing Tyler Munis API details.",
+      "category": "integration",
+      "severity": "High"
+    },
+    {
+      "id": "GT-RK-02",
+      "canonical": "Payment card compliance and finance review risk for the Stripe integration.",
+      "category": "compliance",
+      "severity": "High"
+    },
+    {
+      "id": "GT-RK-03",
+      "canonical": "Legacy data migration quality and inventory risk.",
+      "category": "delivery",
+      "severity": "High"
+    },
+    {
+      "id": "GT-RK-04",
+      "canonical": "Schedule risk from conflicting launch scope and deadlines.",
+      "category": "delivery",
+      "severity": "High"
+    },
+    {
+      "id": "GT-RK-05",
+      "canonical": "Accessibility compliance and testing ownership risk.",
+      "category": "compliance",
+      "severity": "Medium"
+    }
+  ]
+}

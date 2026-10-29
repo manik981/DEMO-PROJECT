@@ -1,0 +1,428 @@
+{
+  "generated_at": "2026-10-29T06:45:54+00:00",
+  "dataset": "synthetic_riverton_permit_portal",
+  "dataset_note": "Small, manually annotated dataset. Ground truth is limited to requirements and gaps explicitly present in the synthetic RFP. It is not a representative benchmark and metrics do not generalize.",
+  "document": "sample_rfp.pdf",
+  "model": "openai/gpt-oss-120b",
+  "mode": "direct",
+  "structured_output_valid": true,
+  "valid_structured_output_rate": 1.0,
+  "runs": 1,
+  "runtime_seconds": 41.29,
+  "token_usage": {
+    "prompt_tokens": 5656,
+    "completion_tokens": 4275,
+    "total_tokens": 9931
+  },
+  "citation_verification": {
+    "checks": 34,
+    "verified": 23,
+    "rate": 0.676
+  },
+  "metrics": {
+    "requirement_extraction": {
+      "overall": {
+        "true_positives": 19,
+        "false_positives": 1,
+        "false_negatives": 2,
+        "actual_count": 20,
+        "ground_truth_count": 21,
+        "precision": 0.95,
+        "recall": 0.905,
+        "f1": 0.927,
+        "matches": [
+          {
+            "ground_truth_id": "GT-FR-01",
+            "actual_id": "FR-1",
+            "score": 0.737
+          },
+          {
+            "ground_truth_id": "GT-FR-02",
+            "actual_id": "FR-2",
+            "score": 1.0
+          },
+          {
+            "ground_truth_id": "GT-FR-03",
+            "actual_id": "FR-3",
+            "score": 0.7
+          },
+          {
+            "ground_truth_id": "GT-FR-04",
+            "actual_id": "FR-4",
+            "score": 0.833
+          },
+          {
+            "ground_truth_id": "GT-FR-05",
+            "actual_id": "FR-5",
+            "score": 0.5
+          },
+          {
+            "ground_truth_id": "GT-FR-06",
+            "actual_id": "FR-6",
+            "score": 0.571
+          },
+          {
+            "ground_truth_id": "GT-FR-07",
+            "actual_id": "FR-7",
+            "score": 0.875
+          },
+          {
+            "ground_truth_id": "GT-FR-08",
+            "actual_id": "FR-8",
+            "score": 1.0
+          },
+          {
+            "ground_truth_id": "GT-FR-09",
+            "actual_id": "FR-9",
+            "score": 1.0
+          },
+          {
+            "ground_truth_id": "GT-FR-10",
+            "actual_id": "FR-10",
+            "score": 1.0
+          },
+          {
+            "ground_truth_id": "GT-FR-11",
+            "actual_id": "FR-11",
+            "score": 0.909
+          },
+          {
+            "ground_truth_id": "GT-FR-12",
+            "actual_id": "FR-12",
+            "score": 0.769
+          },
+          {
+            "ground_truth_id": "GT-NFR-01",
+            "actual_id": "NFR-1",
+            "score": 0.667
+          },
+          {
+            "ground_truth_id": "GT-NFR-03",
+            "actual_id": "NFR-2",
+            "score": 0.923
+          },
+          {
+            "ground_truth_id": "GT-NFR-04",
+            "actual_id": "NFR-3",
+            "score": 0.833
+          },
+          {
+            "ground_truth_id": "GT-NFR-06",
+            "actual_id": "NFR-4",
+            "score": 0.667
+          },
+          {
+            "ground_truth_id": "GT-NFR-07",
+            "actual_id": "NFR-5",
+            "score": 0.824
+          },
+          {
+            "ground_truth_id": "GT-NFR-08",
+            "actual_id": "NFR-6",
+            "score": 0.5
+          },
+          {
+            "ground_truth_id": "GT-NFR-09",
+            "actual_id": "NFR-7",
+            "score": 0.714
+          }
+        ],
+        "missed_ground_truth": [
+          "GT-NFR-02",
+          "GT-NFR-05"
+        ],
+        "unmatched_actual_items": [
+          "NFR-8"
+        ]
+      },
+      "functional": {
+        "true_positives": 12,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "actual_count": 12,
+        "ground_truth_count": 12,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "matches": [
+          {
+            "ground_truth_id": "GT-FR-01",
+            "actual_id": "FR-1",
+            "score": 0.737
+          },
+          {
+            "ground_truth_id": "GT-FR-02",
+            "actual_id": "FR-2",
+            "score": 1.0
+          },
+          {
+            "ground_truth_id": "GT-FR-03",
+            "actual_id": "FR-3",
+            "score": 0.7
+          },
+          {
+            "ground_truth_id": "GT-FR-04",
+            "actual_id": "FR-4",
+            "score": 0.833
+          },
+          {
+            "ground_truth_id": "GT-FR-05",
+            "actual_id": "FR-5",
+            "score": 0.5
+          },
+          {
+            "ground_truth_id": "GT-FR-06",
+            "actual_id": "FR-6",
+            "score": 0.571
+          },
+          {
+            "ground_truth_id": "GT-FR-07",
+            "actual_id": "FR-7",
+            "score": 0.875
+          },
+          {
+            "ground_truth_id": "GT-FR-08",
+            "actual_id": "FR-8",
+            "score": 1.0
+          },
+          {
+            "ground_truth_id": "GT-FR-09",
+            "actual_id": "FR-9",
+            "score": 1.0
+          },
+          {
+            "ground_truth_id": "GT-FR-10",
+            "actual_id": "FR-10",
+            "score": 1.0
+          },
+          {
+            "ground_truth_id": "GT-FR-11",
+            "actual_id": "FR-11",
+            "score": 0.909
+          },
+          {
+            "ground_truth_id": "GT-FR-12",
+            "actual_id": "FR-12",
+            "score": 0.769
+          }
+        ],
+        "missed_ground_truth": [],
+        "unmatched_actual_items": []
+      },
+      "non_functional": {
+        "true_positives": 7,
+        "false_positives": 1,
+        "false_negatives": 2,
+        "actual_count": 8,
+        "ground_truth_count": 9,
+        "precision": 0.875,
+        "recall": 0.778,
+        "f1": 0.824,
+        "matches": [
+          {
+            "ground_truth_id": "GT-NFR-01",
+            "actual_id": "NFR-1",
+            "score": 0.667
+          },
+          {
+            "ground_truth_id": "GT-NFR-03",
+            "actual_id": "NFR-2",
+            "score": 0.923
+          },
+          {
+            "ground_truth_id": "GT-NFR-04",
+            "actual_id": "NFR-3",
+            "score": 0.833
+          },
+          {
+            "ground_truth_id": "GT-NFR-06",
+            "actual_id": "NFR-4",
+            "score": 0.667
+          },
+          {
+            "ground_truth_id": "GT-NFR-07",
+            "actual_id": "NFR-5",
+            "score": 0.824
+          },
+          {
+            "ground_truth_id": "GT-NFR-08",
+            "actual_id": "NFR-6",
+            "score": 0.5
+          },
+          {
+            "ground_truth_id": "GT-NFR-09",
+            "actual_id": "NFR-7",
+            "score": 0.714
+          }
+        ],
+        "missed_ground_truth": [
+          "GT-NFR-02",
+          "GT-NFR-05"
+        ],
+        "unmatched_actual_items": [
+          "NFR-8"
+        ]
+      }
+    },
+    "missing_information_detection": {
+      "true_positives": 6,
+      "false_positives": 0,
+      "false_negatives": 3,
+      "actual_count": 6,
+      "ground_truth_count": 9,
+      "precision": 1.0,
+      "recall": 0.667,
+      "f1": 0.8,
+      "matches": [
+        {
+          "ground_truth_id": "GT-MI-02",
+          "actual_id": "MI-5",
+          "score": 0.5
+        },
+        {
+          "ground_truth_id": "GT-MI-03",
+          "actual_id": "MI-4",
+          "score": 0.75
+        },
+        {
+          "ground_truth_id": "GT-MI-04",
+          "actual_id": "MI-2",
+          "score": 0.857
+        },
+        {
+          "ground_truth_id": "GT-MI-05",
+          "actual_id": "MI-3",
+          "score": 1.0
+        },
+        {
+          "ground_truth_id": "GT-MI-08",
+          "actual_id": "MI-6",
+          "score": 1.0
+        },
+        {
+          "ground_truth_id": "GT-MI-09",
+          "actual_id": "MI-1",
+          "score": 0.667
+        }
+      ],
+      "missed_ground_truth": [
+        "GT-MI-01",
+        "GT-MI-06",
+        "GT-MI-07"
+      ],
+      "unmatched_actual_items": []
+    },
+    "technical_requirements": {
+      "true_positives": 6,
+      "false_positives": 1,
+      "false_negatives": 1,
+      "actual_count": 7,
+      "ground_truth_count": 7,
+      "precision": 0.857,
+      "recall": 0.857,
+      "f1": 0.857,
+      "matches": [
+        {
+          "ground_truth_id": "GT-TR-01",
+          "actual_id": "TR-1",
+          "score": 0.6
+        },
+        {
+          "ground_truth_id": "GT-TR-02",
+          "actual_id": "TR-2",
+          "score": 0.75
+        },
+        {
+          "ground_truth_id": "GT-TR-03",
+          "actual_id": "TR-3",
+          "score": 0.667
+        },
+        {
+          "ground_truth_id": "GT-TR-05",
+          "actual_id": "TR-5",
+          "score": 0.5
+        },
+        {
+          "ground_truth_id": "GT-TR-06",
+          "actual_id": "TR-6",
+          "score": 0.857
+        },
+        {
+          "ground_truth_id": "GT-TR-07",
+          "actual_id": "TR-7",
+          "score": 0.667
+        }
+      ],
+      "missed_ground_truth": [
+        "GT-TR-04"
+      ],
+      "unmatched_actual_items": [
+        "TR-4"
+      ]
+    },
+    "ambiguity_detection": {
+      "true_positives": 1,
+      "false_positives": 1,
+      "false_negatives": 4,
+      "actual_count": 2,
+      "ground_truth_count": 5,
+      "precision": 0.5,
+      "recall": 0.2,
+      "f1": 0.286,
+      "matches": [
+        {
+          "ground_truth_id": "GT-AM-04",
+          "actual_id": "AM-2",
+          "score": 0.667
+        }
+      ],
+      "missed_ground_truth": [
+        "GT-AM-01",
+        "GT-AM-02",
+        "GT-AM-03",
+        "GT-AM-05"
+      ],
+      "unmatched_actual_items": [
+        "AM-1"
+      ]
+    },
+    "risk_detection": {
+      "true_positives": 2,
+      "false_positives": 3,
+      "false_negatives": 3,
+      "actual_count": 5,
+      "ground_truth_count": 5,
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "matches": [
+        {
+          "ground_truth_id": "GT-RK-02",
+          "actual_id": "RK-3",
+          "score": 0.471
+        },
+        {
+          "ground_truth_id": "GT-RK-03",
+          "actual_id": "RK-2",
+          "score": 0.462
+        }
+      ],
+      "missed_ground_truth": [
+        "GT-RK-01",
+        "GT-RK-04",
+        "GT-RK-05"
+      ],
+      "unmatched_actual_items": [
+        "RK-1",
+        "RK-4",
+        "RK-5"
+      ]
+    }
+  },
+  "match_threshold": 0.42,
+  "limitations": [
+    "One synthetic document and one model run; the valid structured-output rate is 1/1 by construction.",
+    "Lexical matching can under-credit correct paraphrases and over-credit shared vocabulary.",
+    "The ground truth covers this document only and does not generalize to real RFPs."
+  ]
+}

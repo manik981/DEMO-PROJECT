@@ -8,10 +8,12 @@ semantic correctness. Flagged items are surfaced for human review.
 from __future__ import annotations
 
 import re
+from difflib import SequenceMatcher
 
 from .document_processor import ExtractedDocument
 from .schemas import (
     NOT_FOUND,
+    ChunkExtraction,
     CitationCheck,
     DocumentAnalysis,
     EvidenceAudit,
@@ -54,6 +56,23 @@ def _unique_ids(items: list, prefix: str) -> list:
     return items
 
 
+def _dedupe_similar(items: list, attribute: str, threshold: float = 0.9) -> list:
+    """Remove near-identical items produced by overlapping chunks."""
+    kept: list[object] = []
+    kept_keys: list[str] = []
+    for item in items:
+        normalized = _normalise(getattr(item, attribute))
+        if not normalized:
+            continue
+        duplicate = any(
+            SequenceMatcher(None, normalized, existing).ratio() >= threshold for existing in kept_keys
+        )
+        if not duplicate:
+            kept.append(item)
+            kept_keys.append(normalized)
+    return kept
+
+
 def normalize_analysis(analysis: DocumentAnalysis) -> DocumentAnalysis:
     """Remove exact duplicates and guarantee unique IDs. No semantic rewriting."""
     analysis.functional_requirements = _unique_ids(
@@ -80,12 +99,61 @@ def normalize_analysis(analysis: DocumentAnalysis) -> DocumentAnalysis:
     return analysis
 
 
-def _evidence_traceable(evidence: str, source_text: str) -> bool:
-    """Check that evidence words actually appear in the source text (lexical only)."""
+def merge_chunk_extractions(extractions: list[ChunkExtraction]) -> tuple[dict, int]:
+    """Deterministically merge map-stage results across overlapping chunks.
+
+    Returns the merged findings dict and the number of duplicate items removed.
+    """
+    fields = (
+        "functional_requirements",
+        "non_functional_requirements",
+        "technical_requirements",
+        "missing_information",
+        "ambiguities",
+        "risks",
+    )
+    combined: dict[str, list] = {field: [] for field in fields}
+    for extraction in extractions:
+        for field in fields:
+            combined[field].extend(getattr(extraction, field))
+
+    before = sum(len(items) for items in combined.values())
+    merged = {
+        "functional_requirements": _unique_ids(
+            _dedupe_similar(combined["functional_requirements"], "description"), "FR"
+        ),
+        "non_functional_requirements": _unique_ids(
+            _dedupe_similar(combined["non_functional_requirements"], "description"), "NFR"
+        ),
+        "technical_requirements": _unique_ids(
+            _dedupe(
+                combined["technical_requirements"],
+                lambda item: f"{item.technology}|{item.status.value}",
+            ),
+            "TR",
+        ),
+        "missing_information": _unique_ids(
+            _dedupe_similar(combined["missing_information"], "topic", threshold=0.85), "MI"
+        ),
+        "ambiguities": _unique_ids(_dedupe_similar(combined["ambiguities"], "description"), "AM"),
+        "risks": _unique_ids(_dedupe_similar(combined["risks"], "description"), "RK"),
+    }
+    after = sum(len(items) for items in merged.values())
+    return (
+        {field: [item.model_dump(mode="json") for item in items] for field, items in merged.items()},
+        before - after,
+    )
+
+
+def _evidence_traceable(evidence: str, source_norm: str) -> bool:
+    """Check that evidence words actually appear in the source text (lexical only).
+
+    `source_norm` must already be normalised by `_normalise` so callers can
+    normalise large page/document text once instead of once per item.
+    """
     if not evidence or evidence.strip() == NOT_FOUND:
         return False
     evidence_norm = _normalise(evidence)
-    source_norm = _normalise(source_text)
     if not evidence_norm or not source_norm:
         return False
     if len(evidence_norm) >= 12 and evidence_norm in source_norm:
@@ -103,8 +171,8 @@ def _check_item(
     item_id: str,
     source_page: int | None,
     evidence: str,
-    pages: dict[int, str],
-    full_text: str,
+    pages_norm: dict[int, str],
+    full_norm: str,
     page_capable: bool,
 ) -> CitationCheck:
     check_id = f"{kind}:{item_id}"
@@ -128,7 +196,7 @@ def _check_item(
                 verified=False,
                 reason="A page number was cited but this file format has no page metadata.",
             )
-        if source_page not in pages:
+        if source_page not in pages_norm:
             return CitationCheck(
                 check_id=check_id,
                 item_kind=kind,
@@ -137,7 +205,7 @@ def _check_item(
                 verified=False,
                 reason=f"Cited page {source_page} does not exist in the extracted document.",
             )
-        if _evidence_traceable(evidence, pages[source_page]):
+        if _evidence_traceable(evidence, pages_norm[source_page]):
             return CitationCheck(
                 check_id=check_id,
                 item_kind=kind,
@@ -146,7 +214,7 @@ def _check_item(
                 verified=True,
                 reason=f"Evidence matched page {source_page} text.",
             )
-        elsewhere = _evidence_traceable(evidence, full_text)
+        elsewhere = _evidence_traceable(evidence, full_norm)
         return CitationCheck(
             check_id=check_id,
             item_kind=kind,
@@ -159,7 +227,7 @@ def _check_item(
             ),
         )
 
-    traceable = _evidence_traceable(evidence, full_text)
+    traceable = _evidence_traceable(evidence, full_norm)
     if not page_capable:
         return CitationCheck(
             check_id=check_id,
@@ -191,7 +259,8 @@ def verify_citations(analysis: DocumentAnalysis, document: ExtractedDocument) ->
     """Verify cited page existence and lexical traceability of supporting evidence."""
     pages = document.page_map()
     page_capable = bool(pages)
-    full_text = document.full_text
+    pages_norm = {number: _normalise(text) for number, text in pages.items()}
+    full_norm = _normalise(document.full_text)
 
     targets: list[tuple[str, object]] = []
     targets += [("functional_requirement", item) for item in analysis.functional_requirements]
@@ -206,8 +275,8 @@ def verify_citations(analysis: DocumentAnalysis, document: ExtractedDocument) ->
             item.id,
             getattr(item, "source_page", None),
             getattr(item, "evidence", ""),
-            pages,
-            full_text,
+            pages_norm,
+            full_norm,
             page_capable,
         )
         for kind, item in targets

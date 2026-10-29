@@ -98,6 +98,52 @@ class RiskCategory(str, Enum):
     OTHER = "other"
 
 
+_RISK_CATEGORY_ALIASES = {
+    "technical_risk": "technical",
+    "tech": "technical",
+    "delivery_risk": "delivery",
+    "schedule": "delivery",
+    "scheduling": "delivery",
+    "timeline": "delivery",
+    "vendor": "delivery",
+    "vendors": "delivery",
+    "resource": "delivery",
+    "resources": "delivery",
+    "data": "technical",
+    "operational": "other",
+    "business": "other",
+    "legal": "compliance",
+    "regulatory": "compliance",
+    "privacy": "compliance",
+    "financial": "other",
+    "cyber": "security",
+    "infosec": "security",
+}
+
+# Ordered keyword fallback for values the model invents. The first token that
+# matches a known category wins; anything unrecognised becomes "other".
+_RISK_CATEGORY_KEYWORDS = (
+    ("security", "security"),
+    ("compliance", "compliance"),
+    ("regulat", "compliance"),
+    ("legal", "compliance"),
+    ("audit", "compliance"),
+    ("integration", "integration"),
+    ("interface", "integration"),
+    ("scope", "scope"),
+    ("delivery", "delivery"),
+    ("schedule", "delivery"),
+    ("timeline", "delivery"),
+    ("vendor", "delivery"),
+    ("resource", "delivery"),
+    ("technical", "technical"),
+    ("technology", "technical"),
+    ("architecture", "technical"),
+    ("performance", "technical"),
+    ("data", "technical"),
+)
+
+
 class Severity(str, Enum):
     HIGH = "High"
     MEDIUM = "Medium"
@@ -178,6 +224,23 @@ class NonFunctionalRequirement(_EvidenceMixin):
 
     _page = field_validator("source_page", mode="before")(_coerce_page)
 
+    @field_validator("category", mode="before")
+    @classmethod
+    def _category_alias(cls, value: object) -> object:
+        if not isinstance(value, str):
+            return value
+        aliases = {
+            "uptime": "availability",
+            "capacity": "scalability",
+            "load": "scalability",
+            "data_protection": "privacy",
+            "compliance_regulatory": "compliance",
+            "supportability": "maintainability",
+            "usability": "accessibility",
+        }
+        key = value.strip().lower().replace(" ", "_").replace("-", "_")
+        return aliases.get(key, key)
+
 
 class TechnicalRequirement(_EvidenceMixin):
     id: str = Field(min_length=1)
@@ -190,6 +253,32 @@ class TechnicalRequirement(_EvidenceMixin):
     confidence: Confidence = Confidence.MEDIUM
 
     _page = field_validator("source_page", mode="before")(_coerce_page)
+
+    @field_validator("category", mode="before")
+    @classmethod
+    def _category_alias(cls, value: object) -> object:
+        if not isinstance(value, str):
+            return value
+        aliases = {
+            "cloud": "infrastructure",
+            "hosting": "infrastructure",
+            "devops": "infrastructure",
+            "deployment": "infrastructure",
+            "third_party": "integration",
+            "thirdparty": "integration",
+            "messaging": "integration",
+            "payment": "integration",
+            "payments": "integration",
+            "frontend": "framework",
+            "backend": "framework",
+            "library": "framework",
+            "identity": "authentication",
+            "sso": "authentication",
+            "security": "authentication",
+            "network": "infrastructure",
+        }
+        key = value.strip().lower().replace(" ", "_").replace("-", "_")
+        return aliases.get(key, key)
 
 
 class MissingInformation(_Schema):
@@ -223,6 +312,23 @@ class Risk(_EvidenceMixin):
     source_page: int | None = None
 
     _page = field_validator("source_page", mode="before")(_coerce_page)
+
+    @field_validator("category", mode="before")
+    @classmethod
+    def _category_alias(cls, value: object) -> object:
+        if not isinstance(value, str):
+            return value
+        key = re.sub(r"[^a-z0-9]+", "_", value.strip().lower()).strip("_")
+        if key in {member.value for member in RiskCategory}:
+            return key
+        for token in key.split("_"):
+            if token in _RISK_CATEGORY_ALIASES:
+                return _RISK_CATEGORY_ALIASES[token]
+        for token in key.split("_"):
+            for needle, category in _RISK_CATEGORY_KEYWORDS:
+                if needle in token:
+                    return category
+        return RiskCategory.OTHER.value
 
 
 class ClarificationQuestion(_Schema):
@@ -263,24 +369,58 @@ class ComplexityAssessment(_Schema):
 class ChunkExtraction(_Schema):
     """Reduced schema used for map-stage calls on long documents."""
 
-    functional_requirements: list[Requirement]
-    non_functional_requirements: list[NonFunctionalRequirement]
-    technical_requirements: list[TechnicalRequirement]
-    missing_information: list[MissingInformation]
-    ambiguities: list[Ambiguity]
-    risks: list[Risk]
+    functional_requirements: list[Requirement] = Field(default_factory=list)
+    non_functional_requirements: list[NonFunctionalRequirement] = Field(default_factory=list)
+    technical_requirements: list[TechnicalRequirement] = Field(default_factory=list)
+    missing_information: list[MissingInformation] = Field(default_factory=list)
+    ambiguities: list[Ambiguity] = Field(default_factory=list)
+    risks: list[Risk] = Field(default_factory=list)
     chunk_summary: str = ""
+    has_more: bool = False
+
+
+class FindingsAnalysis(_Schema):
+    """Stage 1 output: document-grounded findings.
+
+    Collection fields default to empty: a document may legitimately contain no
+    item for a category, and treating that as a schema failure forced wasteful
+    repairs. The executive summary remains mandatory.
+    """
+
+    executive_summary: ExecutiveSummary
+    functional_requirements: list[Requirement] = Field(default_factory=list)
+    non_functional_requirements: list[NonFunctionalRequirement] = Field(default_factory=list)
+    technical_requirements: list[TechnicalRequirement] = Field(default_factory=list)
+    missing_information: list[MissingInformation] = Field(default_factory=list)
+    ambiguities: list[Ambiguity] = Field(default_factory=list)
+    risks: list[Risk] = Field(default_factory=list)
+    has_more: bool = False
+
+
+class AdvisoryAnalysis(_Schema):
+    """Stage 2 output: recommendations derived from validated findings."""
+
+    clarification_questions: list[ClarificationQuestion] = Field(default_factory=list)
+    solution_recommendations: SolutionRecommendations
+    complexity_assessment: ComplexityAssessment
+    limitations: list[str] = Field(default_factory=list)
+
+
+class SummaryAdvisory(AdvisoryAnalysis):
+    """Stage 2 output for long documents: summary plus advisory sections."""
+
+    executive_summary: ExecutiveSummary
 
 
 class DocumentAnalysis(_Schema):
     executive_summary: ExecutiveSummary
-    functional_requirements: list[Requirement]
-    non_functional_requirements: list[NonFunctionalRequirement]
-    technical_requirements: list[TechnicalRequirement]
-    missing_information: list[MissingInformation]
-    ambiguities: list[Ambiguity]
-    risks: list[Risk]
-    clarification_questions: list[ClarificationQuestion]
+    functional_requirements: list[Requirement] = Field(default_factory=list)
+    non_functional_requirements: list[NonFunctionalRequirement] = Field(default_factory=list)
+    technical_requirements: list[TechnicalRequirement] = Field(default_factory=list)
+    missing_information: list[MissingInformation] = Field(default_factory=list)
+    ambiguities: list[Ambiguity] = Field(default_factory=list)
+    risks: list[Risk] = Field(default_factory=list)
+    clarification_questions: list[ClarificationQuestion] = Field(default_factory=list)
     solution_recommendations: SolutionRecommendations
     complexity_assessment: ComplexityAssessment
     limitations: list[str] = Field(default_factory=list)

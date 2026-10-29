@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import docx
-import fitz  # PyMuPDF
+import pymupdf as fitz  # PyMuPDF
 
 from .config import SUPPORTED_EXTENSIONS
 
@@ -43,7 +43,9 @@ class ExtractedDocument:
         parts = []
         for page in self.pages:
             if page.page_number is not None:
-                parts.append(f"[Page {page.page_number}]\n{page.text}")
+                # Must match the marker the prompt promises the model, otherwise
+                # direct-mode citations reference a marker that is not there.
+                parts.append(f"--- Page {page.page_number} ---\n{page.text}")
             else:
                 parts.append(page.text)
         return "\n\n".join(parts).strip()
@@ -122,6 +124,8 @@ def extract_document(data: bytes, filename: str, max_chars: int) -> ExtractedDoc
         pages = _extract_docx(data, filename)
     else:
         pages = _extract_txt(data)
+
+    pages = _normalise_pages(pages)
 
     if not any(page.text.strip() for page in pages):
         raise DocumentError(
@@ -222,6 +226,65 @@ def _extract_txt(data: bytes) -> list[PageText]:
     else:  # pragma: no cover - latin-1 always succeeds, kept as an explicit guard
         raise DocumentError("The text file encoding could not be detected. Save it as UTF-8.")
     return [PageText(page_number=None, text=text)] if text.strip() else []
+
+
+def _normalise_pages(pages: list[PageText]) -> list[PageText]:
+    """Collapse redundant whitespace and drop only obvious repeated margins.
+
+    Page numbers and line structure are preserved; no content is truncated here.
+    """
+    cleaned = [
+        PageText(page_number=page.page_number, text=_normalise_text(page.text))
+        for page in pages
+    ]
+    return _strip_repeated_margins(cleaned)
+
+
+def _normalise_text(text: str) -> str:
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r"[ \t\f\v]+", " ", text)
+    text = re.sub(r" *\n *", "\n", text)
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+def _strip_repeated_margins(pages: list[PageText]) -> list[PageText]:
+    """Remove short, digit-free lines repeated at the top/bottom of most pages.
+
+    Conservative on purpose: headers with dates, page numbers or IDs contain
+    digits and are kept, as is anything longer than 100 characters.
+    """
+    numbered = [page for page in pages if page.page_number is not None]
+    if len(numbered) < 3:
+        return pages
+
+    occurrences: dict[str, set[int]] = {}
+    for page in numbered:
+        lines = page.text.splitlines()
+        margin_indexes = set(range(min(2, len(lines)))) | set(range(max(0, len(lines) - 2), len(lines)))
+        for index in margin_indexes:
+            line = lines[index].strip()
+            if not line or len(line) > 100 or any(char.isdigit() for char in line):
+                continue
+            key = re.sub(r"\s+", " ", line).lower()
+            occurrences.setdefault(key, set()).add(page.page_number or 0)
+
+    threshold = max(3, int(len(numbered) * 0.6))
+    repeated = {key for key, page_numbers in occurrences.items() if len(page_numbers) >= threshold}
+    if not repeated:
+        return pages
+
+    result = []
+    for page in pages:
+        lines = page.text.splitlines()
+        kept = []
+        for index, line in enumerate(lines):
+            near_margin = index < 2 or index >= len(lines) - 2
+            key = re.sub(r"\s+", " ", line.strip()).lower()
+            if near_margin and key in repeated:
+                continue
+            kept.append(line)
+        result.append(PageText(page_number=page.page_number, text="\n".join(kept).strip()))
+    return result
 
 
 def _truncate_pages(pages: list[PageText], max_chars: int) -> list[PageText]:
