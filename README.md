@@ -177,7 +177,7 @@ evidence of the measured run; `evaluation/last_run.log` is ignored.
 3. Add `AGNES_API_KEY` under **App settings → Secrets**:
 
    ```toml
-   AGNES_API_KEY = "sk-..."
+   AGNES_API_KEY = "<your-agnes-api-key>"
    AGNES_MODEL = "agnes-2.5-flash"
    AGNES_BASE_URL = "https://apihub.agnes-ai.com/v1"
    ```
